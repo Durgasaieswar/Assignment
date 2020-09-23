@@ -69,7 +69,7 @@ def train_model(df):
     knn = KNeighborsClassifier(n_neighbors=1)
     knn.fit(X_train, y_train)
     # Calibration of trained model to get confidence score for each prediction
-    calibrated_knn = CalibratedClassifierCV(knn, cv="prefit", method='sigmoid')
+    calibrated_knn = CalibratedClassifierCV(knn, cv="prefit")
     calibrated_knn.fit(X_train, y_train)
     pickle.dump(calibrated_knn, open('./calibrated_knn.pkl', 'wb'))
     # Final prediction of source fields

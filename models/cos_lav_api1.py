@@ -1,3 +1,4 @@
+import re
 import string
 import Levenshtein
 from sklearn.metrics.pairwise import cosine_similarity
@@ -13,8 +14,15 @@ def clean_string(text):
     Returns:
         text (str): Cleaned text
     """
-    text = ''.join([char for char in text if char not in string.punctuation])
-    return text.lower()
+    new_text = []
+    for char in text:
+        if char in string.punctuation:
+            new_text.append(' ')
+        else:
+            new_text.append(char)
+    text = ''.join(new_text)
+    text = re.sub(r'[0-9]+', ' ', text)
+    return text.lower().strip()
 
 
 def find_cosine_similarity(str1, str2):

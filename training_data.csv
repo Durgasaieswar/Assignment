@@ -1,22 +1,22 @@
 Input,Class
-batchref,batchreference
-txnref,transactionreference
+batch ref,batchreference
+txn ref,transactionreference
 buyer,buyername
 supplier,suppliername
-invref,invoicereference
-poref,poreference
-invdate,invoicedate
-invamt,invoiceamount
-invccy,invoicecurrency
-matdate,maturitydate
-paydate,paymentdate
+inv ref,invoicereference
+po ref,poreference
+inv date,invoicedate
+inv amt,invoiceamount
+inv ccy,invoicecurrency
+mat date,maturitydate
+pay date,paymentdate
 tenor,tenor
-netamt,netamount
-grossamt,grossamount
-discamt,discountamount
-adjustamt,adjustmentamount
-adjustreasoncode,adjustmentreasoncode
-payterm,paymentterm
+net amt,netamount
+gross amt,grossamount
+disc amt,discountamount
+adjust amt,adjustmentamount
+adjust reason code,adjustmentreasoncode
+pay term,paymentterm
 status,status
 note,notes
 batchnum,batchreference
@@ -57,105 +57,5 @@ discountamt,discountamount
 adjustmamt,adjustmentamount
 adjustreasoncode,adjustmentreasoncode
 payterm,paymentterm
-status,status
-notes,notes
-batchreference,batchreference
-transactionreference,transactionreference
-buyername,buyername
-suppliername,suppliername
-invoicereference,invoicereference
-poreference,poreference
-invoicedate,invoicedate
-invoiceamount,invoiceamount
-invoicecurrency,invoicecurrency
-maturitydate,maturitydate
-paymentdate,paymentdate
-tenor,tenor
-netamount,netamount
-grossamount,grossamount
-discountamount,discountamount
-adjustmentamount,adjustmentamount
-adjustmentreasoncode,adjustmentreasoncode
-paymentterm,paymentterm
-status,status
-notes,notes
-batchreference,batchreference
-transactionreference,transactionreference
-buyername,buyername
-suppliername,suppliername
-invoicereference,invoicereference
-poreference,poreference
-invoicedate,invoicedate
-invoiceamount,invoiceamount
-invoicecurrency,invoicecurrency
-maturitydate,maturitydate
-paymentdate,paymentdate
-tenor,tenor
-netamount,netamount
-grossamount,grossamount
-discountamount,discountamount
-adjustmentamount,adjustmentamount
-adjustmentreasoncode,adjustmentreasoncode
-paymentterm,paymentterm
-status,status
-notes,notes
-batchreference,batchreference
-transactionreference,transactionreference
-buyername,buyername
-suppliername,suppliername
-invoicereference,invoicereference
-poreference,poreference
-invoicedate,invoicedate
-invoiceamount,invoiceamount
-invoicecurrency,invoicecurrency
-maturitydate,maturitydate
-paymentdate,paymentdate
-tenor,tenor
-netamount,netamount
-grossamount,grossamount
-discountamount,discountamount
-adjustmentamount,adjustmentamount
-adjustmentreasoncode,adjustmentreasoncode
-paymentterm,paymentterm
-status,status
-notes,notes
-batchreference,batchreference
-transactionreference,transactionreference
-buyername,buyername
-suppliername,suppliername
-invoicereference,invoicereference
-poreference,poreference
-invoicedate,invoicedate
-invoiceamount,invoiceamount
-invoicecurrency,invoicecurrency
-maturitydate,maturitydate
-paymentdate,paymentdate
-tenor,tenor
-netamount,netamount
-grossamount,grossamount
-discountamount,discountamount
-adjustmentamount,adjustmentamount
-adjustmentreasoncode,adjustmentreasoncode
-paymentterm,paymentterm
-status,status
-notes,notes
-batchreference,batchreference
-transactionreference,transactionreference
-buyername,buyername
-suppliername,suppliername
-invoicereference,invoicereference
-poreference,poreference
-invoicedate,invoicedate
-invoiceamount,invoiceamount
-invoicecurrency,invoicecurrency
-maturitydate,maturitydate
-paymentdate,paymentdate
-tenor,tenor
-netamount,netamount
-grossamount,grossamount
-discountamount,discountamount
-adjustmentamount,adjustmentamount
-adjustmentreasoncode,adjustmentreasoncode
-paymentterm,paymentterm
 status,status
 notes,notes

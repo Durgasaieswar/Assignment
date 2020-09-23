@@ -1,3 +1,4 @@
+import re
 import string
 import pandas as pd
 from models import cos_lav_api1
@@ -22,7 +23,14 @@ def clean_string(text):
         text (str): Cleaned text
     """
     # Remove special characters from text
-    text = ''.join([char for char in text if char not in string.punctuation])
+    new_text = []
+    for char in text:
+        if char in string.punctuation:
+            new_text.append(' ')
+        else:
+            new_text.append(char)
+    text = ''.join(new_text)
+    text = re.sub(r'[0-9]+', ' ', text)
     return text.lower().strip()
 
 

@@ -59,3 +59,4 @@ adjustreasoncode,adjustmentreasoncode
 payterm,paymentterm
 status,status
 notes,notes
+txn ref,transactionreference

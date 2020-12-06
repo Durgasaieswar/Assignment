@@ -66,6 +66,37 @@ def find_score(term, string):
     return similarity_val
 
 
+def split_words(source_items):
+    """ Split the source item into 2 words
+
+    Args:
+        source_item (str): Input term which requires mapping
+    """
+    first_items, last_items = [], []
+    for source_item in source_items:
+        split_items = re.findall(r'[A-Z](?:[a-z]+|[A-Z]*(?=[A-Z]|$))|[a-z](?:[a-z]+|[A-Z]*(?=[A-Z]|$))', str(source_item).strip())
+        if len(split_items) < 2:
+            new_source_chars, new_source_item = [], ''
+            for letter in source_item:
+                if re.search(r'\W', letter):
+                    # If special character then add just space
+                    new_source_chars.append(' ')
+                else:
+                    # Just append letter directly
+                    new_source_chars.append(letter)
+            new_source_item = ''.join(new_source_chars)
+            if len(new_source_item.strip().split(' ')) > 1:
+                first_items.append(new_source_item.strip().split(' ')[0])
+                last_items.append(new_source_item.strip().split(' ')[1])
+            else:
+                first_items.append(new_source_item.strip().split(' ')[0])
+                last_items.append('#')
+        else:
+            first_items.append(split_items[0].lower())
+            last_items.append(split_items[1].lower())
+    return first_items, last_items
+
+
 def main(input_fields, output_fields):
     """ Trigger the mapping process
 
@@ -77,6 +108,8 @@ def main(input_fields, output_fields):
         mapp_list (list): List of mapped items with confidence score
     """
     mapp_list = []
+    input_1, input_2 = split_words(input_fields)
+    print(f'{input_1}, {input_2}')
     for input_term in input_fields:
         confidence, mapp_dict = [], {}
         for output_term in output_fields:

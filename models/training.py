@@ -25,7 +25,7 @@ def most_scored_class(result):
     return max_class
 
 
-def train_model(df):
+def train_model(df, path):
     """Train the basic model
 
     Args:
@@ -43,9 +43,9 @@ def train_model(df):
     num = len(trainclassdict.keys())
     topicmodeler = shorttext.generators.LDAModeler()
     topicmodeler.train(trainclassdict, num)
-    topicmodeler.save_compact_model('./topicmodeler.bin')
+    topicmodeler.save_compact_model(path + 'topicmodeler.bin')
     # Get cosine similarity
-    classifier_cos = shorttext.classifiers.load_gensimtopicvec_cosineClassifier('./topicmodeler.bin')
+    classifier_cos = shorttext.classifiers.load_gensimtopicvec_cosineClassifier(path + 'topicmodeler.bin')
     cosine_score, kmeans_pred = [], []
     for index, row in df.iterrows():
         result = classifier_cos.score(str(row['Input']))
@@ -59,7 +59,7 @@ def train_model(df):
     enc.fit(data)
     # print(enc.categories_)
     data_encoded = enc.transform(data)
-    output = open('./onehot_encoder.pkl', 'wb')
+    output = open(path + 'onehot_encoder.pkl', 'wb')
     pickle.dump(enc, output)
     output.close()
     labels = list(df['Class'])
@@ -69,17 +69,17 @@ def train_model(df):
     knn = KNeighborsClassifier(n_neighbors=1)
     knn.fit(X_train, y_train)
     # Calibration of trained model to get confidence score for each prediction
-    calibrated_knn = CalibratedClassifierCV(knn, cv="prefit")
-    calibrated_knn.fit(X_train, y_train)
-    pickle.dump(calibrated_knn, open('./calibrated_knn.pkl', 'wb'))
+    # calibrated_knn = CalibratedClassifierCV(knn, cv="prefit")
+    # calibrated_knn.fit(X_train, y_train)
+    # pickle.dump(calibrated_knn, open(path + 'calibrated_knn.pkl', 'wb'))
     # Final prediction of source fields
     y_pred = knn.predict(X_test)
     print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
-    pickle.dump(knn, open('./model_one_hot.pkl', 'wb'))
+    pickle.dump(knn, open(path + 'model_one_hot.pkl', 'wb'))
     return True
 
 
-def prediction(input_terms_df):
+def prediction(input_terms_df, predict_path):
     """Read the pickle files and make a prediction (Inference code)
 
     Args:
@@ -88,28 +88,33 @@ def prediction(input_terms_df):
     Returns:
         input_terms_df (DataFrame): Dataframe with source fields & predicted fields
     """
-    classifier_cos = shorttext.classifiers.load_gensimtopicvec_cosineClassifier('./topicmodeler.bin')
+    classifier_cos = shorttext.classifiers.load_gensimtopicvec_cosineClassifier(predict_path + 'topicmodeler.bin')
     # Cosine similarity for new source fields
-    cosine_score = []
     for index, row in input_terms_df.iterrows():
-        result = classifier_cos.score(str(row['Input']))
-        max_class = most_scored_class(result)
-        cosine_score.append(max_class)
-    input_terms_df['cosine_score'] = cosine_score
-    input_terms_df.to_csv('./features.csv')
-    test_data = input_terms_df[['cosine_score']].values
-    one_encode = pickle.load(open('./onehot_encoder.pkl', 'rb'))
-    # OneHotencoding
-    test_data = one_encode.transform(test_data)
-    knn_predict = pickle.load(open('./model_one_hot.pkl', 'rb'))
-    calibrated_knn = pickle.load(open('./calibrated_knn.pkl', 'rb'))
-    # Predictproba to get confidence score for each prediction
-    probabilities = calibrated_knn.predict_proba(test_data)
-    confid_score = [round(np.amax(i)*100, 2) for i in probabilities]
-    # for i in probabilities:
-    #     print(f'Value: {list(knn_predict.classes_)[np.argmax(i)]}, Confid: {np.amax(i)}')
-    #     confid_score.append(np.amax(i))
-    test_predict = knn_predict.predict(test_data)
-    input_terms_df['predictions'] = test_predict
-    input_terms_df['confidence'] = confid_score
+        cosine_score = []
+        if str(row['Input']).strip() == '#':
+            input_terms_df.loc[index, 'predictions'] = 'Reference'
+            input_terms_df.loc[index, 'confidence'] = 100.0
+        elif str(row['Input']).strip() not in ['nan', '']:
+            result = classifier_cos.score(str(row['Input']))
+            max_class = most_scored_class(result)
+            cosine_score.append(max_class)
+            input_terms_df.loc[index, 'cosine_score'] = cosine_score
+            # input_terms_df.to_csv('./features.csv')
+            # input_data.append(row['Input'])
+            test_data = np.array([cosine_score])
+            one_encode = pickle.load(open(predict_path + 'onehot_encoder.pkl', 'rb'))
+            # OneHotencoding
+            test_data = one_encode.transform(test_data)
+            knn_predict = pickle.load(open(predict_path + 'model_one_hot.pkl', 'rb'))
+            # calibrated_knn = pickle.load(open(predict_path + 'calibrated_knn.pkl', 'rb'))
+            # Predictproba to get confidence score for each prediction
+            test_predict = knn_predict.predict(test_data)
+            probabilities = knn_predict.predict_proba(test_data)
+            confid_score = [round(np.amax(probabilities)*100, 2)]
+            # for i in probabilities:
+            #     print(f'Value: {list(knn_predict.classes_)[np.argmax(i)]}, Confid: {np.amax(i)}')
+            #     confid_score.append(np.amax(i))
+            input_terms_df.loc[index, 'predictions'] = test_predict
+            input_terms_df.loc[index, 'confidence'] = confid_score
     return input_terms_df

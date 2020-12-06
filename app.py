@@ -161,45 +161,48 @@ def test_model():
     """
     api_request3 = request.json
     if api_request3:
-        source_fields = api_request3['source']['formatFields']
-        df1 = pd.DataFrame()
-        df2 = pd.DataFrame()
-        output_df = pd.DataFrame()
-        predictions, confidence = [], []
-        # Remove special characters from source fields
-        # source_fields = [clean_string(i) for i in source_fields]
-        predict_first, predict_last = split_words(source_fields)
-        df1['Input'] = predict_first
-        df2['Input'] = predict_last
-        # Make predictions for given source fields
-        output_first_df = training.prediction(df1, './models/first_items/')
-        output_first_df.to_csv('first.csv', index=False)
-        output_last_df = training.prediction(df2, './models/last_items/')
-        output_last_df.to_csv('last.csv', index=False)
-        for first, last in zip(list(output_first_df['predictions']), list(output_last_df['predictions'])):
-            if str(last).strip() in ['nan', '']:
-                predictions.append(str(first))
-                confidence.append((output_first_df.loc[list(output_first_df['predictions']).index(first), 'confidence']))
-            else:
-                predictions.append(str(first) + str(last))
-                confidence.append((output_first_df.loc[list(output_first_df['predictions']).index(first), 'confidence'] + output_last_df.loc[list(output_last_df['predictions']).index(last), 'confidence'])/2)
-        output_df['Input'] = source_fields
-        output_df['predictions'] = predictions
-        output_df['confidence'] = confidence
-        output_df.to_csv('final.csv', index=False)
-        api_response_3, mappings = {}, []
-        # Create response JSON with confidence scores & mappings
-        api_response_3['sourceformatName'] = api_request3['source']['formatName']
-        api_response_3['targetformatName'] = api_request3['target']['formatName']
-        api_response_3['overallConfidence'] = round(output_df['confidence'].mean(), 2)
-        for ind, row in output_df.iterrows():
-            mapped_items = {}
-            mapped_items['sourceField'] = row['Input']
-            mapped_items['targetField'] = row['predictions']
-            mapped_items['confidence'] = row['confidence']
-            mappings.append(mapped_items)
-        api_response_3['mappings'] = mappings
-        return jsonify(api_response_3)
+        try:
+            source_fields = api_request3['source']['formatFields']
+            df1 = pd.DataFrame()
+            df2 = pd.DataFrame()
+            output_df = pd.DataFrame()
+            predictions, confidence = [], []
+            # Remove special characters from source fields
+            # source_fields = [clean_string(i) for i in source_fields]
+            predict_first, predict_last = split_words(source_fields)
+            df1['Input'] = predict_first
+            df2['Input'] = predict_last
+            # Make predictions for given source fields
+            output_first_df = training.prediction(df1, './models/first_items/')
+            output_first_df.to_csv('first.csv', index=False)
+            output_last_df = training.prediction(df2, './models/last_items/')
+            output_last_df.to_csv('last.csv', index=False)
+            for first, last in zip(list(output_first_df['predictions']), list(output_last_df['predictions'])):
+                if str(last).strip() in ['nan', '']:
+                    predictions.append(str(first))
+                    confidence.append((output_first_df.loc[list(output_first_df['predictions']).index(first), 'confidence']))
+                else:
+                    predictions.append(str(first) + str(last))
+                    confidence.append((output_first_df.loc[list(output_first_df['predictions']).index(first), 'confidence'] + output_last_df.loc[list(output_last_df['predictions']).index(last), 'confidence'])/2)
+            output_df['Input'] = source_fields
+            output_df['predictions'] = predictions
+            output_df['confidence'] = confidence
+            output_df.to_csv('final.csv', index=False)
+            api_response_3, mappings = {}, []
+            # Create response JSON with confidence scores & mappings
+            api_response_3['sourceformatName'] = api_request3['source']['formatName']
+            api_response_3['targetformatName'] = api_request3['target']['formatName']
+            api_response_3['overallConfidence'] = round(output_df['confidence'].mean(), 2)
+            for ind, row in output_df.iterrows():
+                mapped_items = {}
+                mapped_items['sourceField'] = row['Input']
+                mapped_items['targetField'] = row['predictions']
+                mapped_items['confidence'] = row['confidence']
+                mappings.append(mapped_items)
+            api_response_3['mappings'] = mappings
+            return jsonify(api_response_3)
+        except Exception as e:
+            return jsonify({'status': 'Error occurred while processing'})
     else:
         return jsonify({'status': 'Request Payload is not received'})
 
